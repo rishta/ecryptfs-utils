@@ -1,0 +1,64 @@
+#!/bin/bash -e
+#
+#    ecryptfs-recover-lost+found
+#    Copyright (C) 2020 Jacek Krysztofik
+#
+#    Authors: Jacek Krysztofik <jacek.krysztofik+ecryptfs@gmail.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, version 2 of the License.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+TARGET="$(readlink -f "$1")" # enforce canonical filename
+SOURCE="$(readlink -f "$2")" # enforce canonical filename
+
+if [ ! -d "$TARGET" -o ! -w "$TARGET" ]; then
+    echo \"$TARGET\" is not a writeable directory
+    exit 1
+fi
+
+case "$(ecryptfs-find "$TARGET")" in
+    *ECRYPTFS_FNEK_ENCRYPTED.*)
+        ;;
+    *)
+        echo Target directory must be inside a mounted ecryptfs volume
+        exit 1
+        ;;
+esac
+
+OWNER="$(stat -c %U "$TARGET")"
+GROUP="$(stat -c %G "$TARGET")"
+
+if [ ! -e "$SOURCE" ]; then
+    echo \"$SOURCE\" not found
+    exit 1
+fi
+
+if [ -r "$SOURCE" ]; then
+    echo \"$SOURCE\" is not readable
+    echo Are you running as \"$(stat -c %U "$SOURCE")\"?
+    exit 1
+fi
+
+# decrypted
+RECDIR="$TARGET/RECOVER-$(date +%F-%X)"
+install -o "$OWNER" -g "$GROUP" -d "$RECDIR"
+
+DF="$RECDIR/tmp"
+touch "$DF"
+EF="$(ecryptfs-find "$DF")"
+rm "$EF"
+
+while read -d $'\0' found; do
+    cp -a "$found" "$EF" # copy encrypted file to .Private/.../
+    mv "$DF" "$RECDIR/$(basename "$found")" # move temporary filename to the name found in lost+found
+done < <(find "$SOURCE" -maxdepth 1 -user "$OWNER" -type d -o -type f -print0)
+

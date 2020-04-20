@@ -19,7 +19,8 @@ bin_SCRIPTS = ecryptfs-setup-private \
 	      ecryptfs-recover-private \
 	      ecryptfs-migrate-home \
 	      ecryptfs-find \
-	      ecryptfs-verify
+	      ecryptfs-verify \
+	      ecryptfs-recover-lost+found
 bin2dir = $(bindir)
 
 noinst_PROGRAMS=test

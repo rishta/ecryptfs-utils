@@ -6,8 +6,9 @@ XSBC-Original-Maintainer: Daniel Baumann <daniel@debian.org>
 Build-Depends:
  debhelper (>= 8),
  dh-autoreconf,
+ dh-python,
  intltool,
- libgcrypt11-dev,
+ libgcrypt-dev,
  libglib2.0-dev,
  libkeyutils-dev,
  libnss3-dev,
