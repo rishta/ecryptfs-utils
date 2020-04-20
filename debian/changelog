@@ -1,4 +1,4 @@
-ecryptfs-utils (104) UNRELEASED; urgency=low
+ecryptfs-utils (104) focal; urgency=low
 
   [ Colin King ]
   * src/libecryptfs/ecryptfs-stat.c, tests/kernel/extend-file-

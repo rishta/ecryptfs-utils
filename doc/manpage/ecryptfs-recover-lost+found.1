@@ -1,0 +1,30 @@
+.TH ecryptfs-recover-lost+found 1 2020-04-20 ecryptfs-utils "eCryptfs"
+.SH NAME
+ecryptfs-recover-lost+found \- recover encrypted files after corruption of underlying filesystem
+
+.SH SYNOPSIS
+\fBecryptfs-find\fP target-directory lost+found-directory
+
+.SH DESCRIPTION
+This program will copy files recovered by fsck after corruption of filesystem hosting the \fB.Private\fP directory back to encrypted directory so that they can be read.
+
+Notes:
+ - the eCryptfs filesystem must be mounted in order to work
+ - this script must be run with permissions to read the \fBlost+found\fP(1) directory
+ - it uses \fBbash\fP(1) because some required features not available in \fBsh\fP(1)
+ - it uses \fBinstall\fP(1) to create files with adequate ownership
+ - it uses \fBcp\fP(1) to preserve attributes of recovered objects
+ - it uses \fBecryptfs-find\fP(1) to map temporary files
+ - it uses \fBreadlink\fP(1) to canonicalize filenames
+ - it uses \fBfind\fP(1) to filter the files belonging to the owner of the target directory
+ - it uses \fBstat\fP(1) to guess the owner of the target directory and lost files
+
+.SH SEE ALSO
+\fBfind\fP(1), \fBls\fP(1), \fBstat\fP(1), \fBfsck\fP(8), \fBreadlink\fP(1), \fBbash\fP(1), \fBinstall\fP(1), \fBcp\fP(1)
+
+\fIhttp://ecryptfs.org/\fP
+
+.SH AUTHOR
+This manpage was written by Jacek Krysztofik <jacek.krysztofik+ecryptfs@gmail.com> for compliance with \fBecryptfs-utils\fP package. Permission is granted to copy, distribute and/or modify this document under the terms of the GNU General Public License, Version 2 or any later version published by the Free Software Foundation.
+
+On Debian and Ubuntu systems, the complete text of the GNU General Public License can be found in /usr/share/common-licenses/GPL.
